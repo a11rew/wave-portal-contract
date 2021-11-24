@@ -1,23 +1,24 @@
 import hre from "hardhat";
 
 const main = async () => {
-  // Obtain reandom SignerAddress for testing
-  const [owner, randomPerson] = await hre.ethers.getSigners();
   const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
   const waveContract = await waveContractFactory.deploy();
-  await waveContract.deployed();
 
   console.log("Contract deployed to", waveContract.address);
-  console.log("Contract deployed by", owner.address);
 
   let waveCount;
   waveCount = await waveContract.getTotalWaves();
+  console.log("Total number of waves: ", waveCount.toNumber());
 
-  const waveTxn = await waveContract.connect(randomPerson).wave();
+  const waveTxn = await waveContract.wave("A message!");
   await waveTxn.wait();
 
-  waveCount = await waveContract.getTotalWaves();
-  return waveCount;
+  const [_, randomPerson] = await hre.ethers.getSigners();
+  const waveTxnTwo = await waveContract.connect(randomPerson).wave("Message");
+  await waveTxnTwo.wait();
+
+  const allWaves = await waveContract.getAllWaves();
+  console.log(allWaves);
 };
 
 (async () => {
