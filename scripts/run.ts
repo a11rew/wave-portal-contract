@@ -3,7 +3,7 @@ import hre from "hardhat";
 const main = async () => {
   const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
   const waveContract = await waveContractFactory.deploy({
-    value: hre.ethers.utils.parseEther("0.001"),
+    value: hre.ethers.utils.parseEther("0.1"),
   });
   await waveContract.deployed();
 
@@ -21,6 +21,9 @@ const main = async () => {
   // Send wave
   const waveTxn = await waveContract.wave("A message!");
   await waveTxn.wait();
+
+  const waveTxn2 = await waveContract.wave("A message!");
+  await waveTxn2.wait();
 
   // Get balance after wave
   contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
