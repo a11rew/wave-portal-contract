@@ -17,12 +17,25 @@ contract WavePortal {
 
     Wave[] private waves;
 
+    // Mapping for cooldown
+    mapping(address => uint256) public lastWavedAt;
+
     constructor() payable {
         console.log("Constructed");
         seed = (block.timestamp * block.difficulty) % 100;
     }
 
     function wave(string memory _message) public {
+        console.log("Last waved: %s", lastWavedAt[msg.sender]);
+        // Cooldown
+        require(
+            lastWavedAt[msg.sender] + 10 minutes < block.timestamp,
+            "Cooldown: Wait 10 minutes"
+        );
+
+        // Update lastwaved for user
+        lastWavedAt[msg.sender] = block.timestamp;
+
         totalWaves += 1;
 
         waves.push(Wave(msg.sender, _message, block.timestamp));
