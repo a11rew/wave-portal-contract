@@ -33,7 +33,7 @@ contract WavePortal {
         console.log("Last waved: %s", lastWavedAt[msg.sender]);
         // Cooldown
 
-        if (lastWavedAt[msg.sender] + 10 minutes > block.timestamp) {
+        if (lastWavedAt[msg.sender] + 15 seconds > block.timestamp) {
             revert CooldownError(msg.sender, block.timestamp);
         }
 
@@ -49,6 +49,8 @@ contract WavePortal {
 
         console.log("Random # generated %s", seed);
 
+        emit NewWave(msg.sender, block.timestamp, _message);
+
         if (seed <= 7) {
             console.log("%s won!", msg.sender);
 
@@ -62,8 +64,6 @@ contract WavePortal {
             (bool success, ) = (msg.sender).call{value: prizeAmount}("");
             require(success, "Failed to withdraw money from account");
         }
-
-        emit NewWave(msg.sender, block.timestamp, _message);
     }
 
     function getAllWaves() public view returns (Wave[] memory) {
