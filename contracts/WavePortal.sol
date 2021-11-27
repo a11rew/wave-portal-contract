@@ -7,7 +7,11 @@ contract WavePortal {
     uint256 private totalWaves;
     uint256 private seed;
 
+    // Event published on new wave tx
     event NewWave(address indexed from, uint256 timestamp, string message);
+
+    // Cooldown error object
+    error CooldownError(address addr, uint256 lastTime);
 
     struct Wave {
         address waver;
@@ -28,10 +32,10 @@ contract WavePortal {
     function wave(string memory _message) public {
         console.log("Last waved: %s", lastWavedAt[msg.sender]);
         // Cooldown
-        require(
-            lastWavedAt[msg.sender] + 10 minutes < block.timestamp,
-            "Cooldown: Wait 10 minutes"
-        );
+
+        if (lastWavedAt[msg.sender] + 10 minutes > block.timestamp) {
+            revert CooldownError(msg.sender, block.timestamp);
+        }
 
         // Update lastwaved for user
         lastWavedAt[msg.sender] = block.timestamp;
